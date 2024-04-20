@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,25 +27,39 @@ export class UsersController {
 
   @Get()
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map((user) => new UserEntity(user));
   }
 
   @Get(':id')
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const users = await this.usersService.findOne(+id);
+    if (!users) {
+      throw new NotFoundException(`Users with id ${id} not found`);
+    }
+    return new UserEntity(users);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: UserEntity })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    const users = this.usersService.update(+id, updateUserDto);
+    if (!users) {
+      throw new NotFoundException(`Users with id ${id} not found`);
+    }
+    return users;
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: UserEntity })
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    const users = this.usersService.remove(+id);
+
+    if (!users) {
+      throw new NotFoundException(`Users with id ${id} not found`);
+    }
+    return users;
   }
 }
