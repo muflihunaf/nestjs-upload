@@ -12,6 +12,7 @@ async function bootstrap() {
     .setTitle('Document Management system')
     .setDescription('Dokumen manajemen sistem menggunakan nest')
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
