@@ -9,17 +9,30 @@ import {
   UseGuards,
   Query,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('document')
 @ApiTags('document')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(
+    private readonly documentService: DocumentService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post()
   @ApiBearerAuth()
@@ -27,6 +40,38 @@ export class DocumentController {
   create(@Body() createDocumentDto: CreateDocumentDto, @Req() req) {
     createDocumentDto.user_id = req.user.user_id;
     return this.documentService.create(createDocumentDto);
+  }
+  @Patch('/Post')
+  @ApiOperation({ summary: 'Uploads a single file' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return await this.cloudinaryService
+      .uploadFile(file)
+      .then((data) => {
+        return {
+          statusCode: 200,
+          data: data.secure_url,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: 400,
+          message: err.message,
+        };
+      });
   }
 
   @Get()
@@ -76,12 +121,5 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @Req() req) {
     return this.documentService.remove(+id, +req.user.user_id);
-  }
-
-  @Post('/upload')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  upload(@Body() createDocumentDto: CreateDocumentDto) {
-    return this.documentService.create(createDocumentDto);
   }
 }

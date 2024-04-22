@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('Document Management system')
     .setDescription('Dokumen manajemen sistem menggunakan nest')

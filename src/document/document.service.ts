@@ -7,10 +7,14 @@ import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class DocumentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   create(createDocumentDto: CreateDocumentDto) {
     return this.prisma.document.create({ data: createDocumentDto });
@@ -141,6 +145,7 @@ export class DocumentService {
     const isOwner = existingDocument.user_id === userId;
 
     if (isSharedWithUser || isOwner) {
+      await this.cloudinaryService.deleteFile(existingDocument.file_path);
       return this.prisma.document.delete({ where: { document_id: id } });
     } else {
       throw new ForbiddenException(
