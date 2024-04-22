@@ -10,9 +10,9 @@ export class CloudinaryService {
   async uploadFile(fileName: Express.Multer.File): Promise<CloudinaryResponse> {
     return new Promise((resolve, reject) => {
       v2.config({
-        cloud_name: 'dqxgzrgab',
-        api_key: '681714693314983',
-        api_secret: 'S_P_H3qnAnoPMa1WPgMK_aCwKn0',
+        cloud_name: process.env.CLOUDINARY_NAME,
+        api_key: process.env.CLOUDINARY_KEY,
+        api_secret: process.env.CLOUDINARY_SECRET,
       });
       const upload = v2.uploader.upload_stream((error, result) => {
         if (error) return reject(error);
@@ -24,9 +24,9 @@ export class CloudinaryService {
 
   async deleteFile(fileId: string) {
     v2.config({
-      cloud_name: 'dqxgzrgab',
-      api_key: '681714693314983',
-      api_secret: 'S_P_H3qnAnoPMa1WPgMK_aCwKn0',
+      cloud_name: process.env.CLOUDINARY_NAME,
+      api_key: process.env.CLOUDINARY_KEY,
+      api_secret: process.env.CLOUDINARY_SECRET,
     });
     const url = fileId;
 
