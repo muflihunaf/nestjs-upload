@@ -10,10 +10,10 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     PrismaModule,
-    UsersModule,
-    SharingModule,
-    DocumentModule,
     AuthModule,
+    DocumentModule,
+    SharingModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

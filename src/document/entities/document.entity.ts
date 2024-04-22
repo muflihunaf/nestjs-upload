@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Document } from '@prisma/client';
 import { SharingEntity } from 'src/sharing/entities/sharing.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
 
 export class DocumentEntity implements Document {
   @ApiProperty()
@@ -20,13 +19,7 @@ export class DocumentEntity implements Document {
   @ApiProperty()
   shared_with: SharingEntity;
 
-  // constructor({ shared_with, ...data }: Partial<DocumentEntity>) {
-  //   Object.assign(this, data);
-
-  //   if (shared_with.shared_by_user) {
-  //     this.shared_with.shared_by_user = new UserEntity(
-  //       shared_with.shared_by_user,
-  //     );
-  //   }
-  // }
+  constructor(partial: Partial<DocumentEntity>) {
+    Object.assign(this, partial);
+  }
 }

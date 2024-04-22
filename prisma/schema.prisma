@@ -12,29 +12,29 @@ model User {
   username             String
   email                String
   password             String
-  documents            Document[]    // One-to-many relation with Document model
+  documents            Document[]   
   shared_documents     Sharing[]    @relation("UserSharedDocuments") // One-to-many relation with Sharing model
   received_sharing     Sharing[]    @relation("UserReceivedSharing") // One-to-many relation with Sharing model
 }
 
 model Document {
   document_id       Int        @id @default(autoincrement())
-  user              User       @relation(fields: [user_id], references: [user_id])
+  user              User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id           Int
   title             String
   description       String
   file_path         String
   upload_date       DateTime
-  shared_with       Sharing[]  // One-to-many relation with Sharing model
+  shared_with       Sharing[]  
 }
 
 model Sharing {
   sharing_id            Int       @id @default(autoincrement())
-  document              Document  @relation(fields: [document_id], references: [document_id])
+  document              Document  @relation(fields: [document_id], references: [document_id], onDelete: Cascade)
   document_id           Int
-  shared_with_user      User      @relation("UserReceivedSharing", fields: [shared_with_user_id], references: [user_id])
+  shared_with_user      User      @relation("UserReceivedSharing", fields: [shared_with_user_id], references: [user_id], onDelete: Cascade)
   shared_with_user_id   Int
   permission_level      String    // e.g., Read, Write
-  shared_by_user        User      @relation("UserSharedDocuments", fields: [shared_by_user_id], references: [user_id])
+  shared_by_user        User      @relation("UserSharedDocuments", fields: [shared_by_user_id], references: [user_id], onDelete: Cascade)
   shared_by_user_id     Int
 }

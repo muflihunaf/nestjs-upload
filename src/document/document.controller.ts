@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
@@ -23,7 +24,8 @@ export class DocumentController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createDocumentDto: CreateDocumentDto) {
+  create(@Body() createDocumentDto: CreateDocumentDto, @Req() req) {
+    createDocumentDto.user_id = req.user.user_id;
     return this.documentService.create(createDocumentDto);
   }
 
@@ -31,18 +33,27 @@ export class DocumentController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async findAll(
+    @Req() req,
     @Query('OrderBy') orderBy: string,
     @Query('limit') limit: number,
+    @Query('skip') skip: number,
   ) {
-    const documents = await this.documentService.findAll(orderBy, +limit);
+    const userId = req.user.user_id;
+    const documents = await this.documentService.findAll(
+      orderBy,
+      +limit,
+      +skip,
+      +userId,
+    );
     return documents;
   }
 
   @Get(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.documentService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req) {
+    const userId = req.user.user_id;
+    return this.documentService.findOne(+id, userId);
   }
 
   @Patch(':id')
@@ -51,15 +62,20 @@ export class DocumentController {
   update(
     @Param('id') id: string,
     @Body() updateDocumentDto: UpdateDocumentDto,
+    @Req() req,
   ) {
-    return this.documentService.update(+id, updateDocumentDto);
+    return this.documentService.update(
+      +id,
+      updateDocumentDto,
+      +req.user.user_id,
+    );
   }
 
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.documentService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.documentService.remove(+id, +req.user.user_id);
   }
 
   @Post('/upload')

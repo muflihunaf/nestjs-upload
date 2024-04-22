@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 export class CreateDocumentDto {
-  @IsInt()
-  @ApiProperty({ required: true })
   user_id: number;
 
   @IsString()
