@@ -14,7 +14,7 @@ import {
 import { SharingService } from './sharing.service';
 import { CreateSharingDto } from './dto/create-sharing.dto';
 import { UpdateSharingDto } from './dto/update-sharing.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SharingEntity } from './entities/sharing.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -26,6 +26,7 @@ export class SharingController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'save A shared document' })
   async create(@Req() req, @Body() createSharingDto: CreateSharingDto) {
     createSharingDto.shared_by_user_id = req.user.user_id;
     return await this.sharingService.create(createSharingDto);
@@ -35,6 +36,7 @@ export class SharingController {
   @Get()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get All shared document' })
   async findAll(@Req() request) {
     const user = request.user;
     if (!user) {
@@ -47,6 +49,7 @@ export class SharingController {
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get A shared document' })
   update(
     @Param('id') id: string,
     @Body() updateSharingDto: UpdateSharingDto,
@@ -57,6 +60,7 @@ export class SharingController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Delete access shared document' })
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req) {
     return this.sharingService.remove(+id, +req.user.user_id);

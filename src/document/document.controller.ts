@@ -37,6 +37,7 @@ export class DocumentController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Save A Document' })
   create(@Body() createDocumentDto: CreateDocumentDto, @Req() req) {
     createDocumentDto.user_id = req.user.user_id;
     return this.documentService.create(createDocumentDto);
@@ -77,6 +78,11 @@ export class DocumentController {
   @Get()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Find All Document',
+    description:
+      'Order By: [ASC,DESC], limit: mengambil banyaknya data, skip: melewati data',
+  })
   async findAll(
     @Req() req,
     @Query('OrderBy') orderBy: string,
@@ -96,6 +102,7 @@ export class DocumentController {
   @Get(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get A Document' })
   findOne(@Param('id') id: string, @Req() req) {
     const userId = req.user.user_id;
     return this.documentService.findOne(+id, userId);
@@ -104,6 +111,7 @@ export class DocumentController {
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update A Document' })
   update(
     @Param('id') id: string,
     @Body() updateDocumentDto: UpdateDocumentDto,
@@ -119,6 +127,7 @@ export class DocumentController {
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Delete Document' })
   remove(@Param('id') id: string, @Req() req) {
     return this.documentService.remove(+id, +req.user.user_id);
   }

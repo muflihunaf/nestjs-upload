@@ -26,7 +26,6 @@ export class DocumentService {
         title: by,
       },
     ];
-    // const limit
     const document = await this.prisma.document.findMany({
       where: {
         OR: [
